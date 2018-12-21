@@ -1,4 +1,5 @@
-README.md
+MANIFEST.in
+README.rst
 setup.py
 membrane_embedder2/__init__.py
 membrane_embedder2.egg-info/PKG-INFO

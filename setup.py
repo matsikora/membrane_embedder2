@@ -11,5 +11,5 @@ setup(name='membrane-embedder2',
       author_email='matsikora@gmail.com',
       license=' GNU GPLv3 ',
       packages=['membrane_embedder2'],
-      install_requires=['numpy','mdanalysis'],
+      install_requires=['numpy','mdanalysis','pytest'],
       zip_safe=False)
