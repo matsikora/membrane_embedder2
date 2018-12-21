@@ -2,7 +2,7 @@ Metadata-Version: 1.0
 Name: membrane-embedder2
 Version: 0.1
 Summary: Create multiprotein systems for complexes
-Home-page: http://github.com/matsikora/membrane-embedder2
+Home-page: https://github.com/matsikora/membrane_embedder2
 Author: Mateusz Sikora
 Author-email: matsikora@gmail.com
 License:  GNU GPLv3 
