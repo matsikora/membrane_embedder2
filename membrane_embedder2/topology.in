@@ -1,0 +1,9 @@
+#
+[ Molecule_1 ]
+PDB: hetero.pdb
+Ncopies: 8
+# Cutoff for molecule placement. Set to 0 if Complexes should deal wiht it
+Cutoff: 0.1 
+#Placement: random # grid, coordinates
+#Placement: coordinates # grid, coordinates
+Placement: grid # grid, coordinates
