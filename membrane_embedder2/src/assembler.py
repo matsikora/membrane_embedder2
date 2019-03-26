@@ -59,8 +59,6 @@ class Assembler:
       coordinates,residues,segids=self._loadPDB(PDB)
       
       
-      
-      
       # There are 3 options: random, grid, coordinates 
       if Placement == "coordinates":
          # Directly take the coordinates as they are in the input file
@@ -98,14 +96,14 @@ class Assembler:
          # Create a cubic grid in the box unless this is a membrane system
          # Move test molecule to the begining of the coord system
          coordinates-=np.mean(coordinates,axis=0) 
-         positions = self._guess_grid(Ncopies,3)
-         
+         positions = self._guess_grid(Ncopies,2)
+
+
          for imol in range(Ncopies):
             pos=positions[imol]
             if not self._has_clash(coordinates+pos,Cutoff):
                self._update_top(segids)
                self._append_mol(coordinates+pos,residues,segids)
-               
                imol+=1
                print "accepted {} out of {}".format(imol,Ncopies)
             else:
@@ -133,6 +131,8 @@ class Assembler:
       Will guess the minimum number of planes and rows and fill with Ncopies
       
       This is a not well defined problem, so we make an approximation.
+      
+      If dimensions < 3 we will still return a 3D array but with zeros in the last 1 or 2 coords
       """
       
       points_per_dim=int(np.ceil(Ncopies**(1./dimensions)))
@@ -144,10 +144,14 @@ class Assembler:
          new_positions=list(np.ndindex(points_per_dim,points_per_dim))
       else:
          new_positions=list(np.ndindex(points_per_dim))
+         
       # Get box fractions
       new_positions = np.array(new_positions[:Ncopies]).astype(np.float32)/(dimensions+1) # divide by N+1 to avoid touching via PBC
       
-      return new_positions*self.box
+      # supplement zeros to have 3d array always
+      new_positions=np.hstack([new_positions]+[np.zeros((Ncopies,1)) for i in xrange(3-dimensions)])
+
+      return new_positions.astype(np.float32)*self.box
 
       
    def _get_random_position(self):
@@ -203,8 +207,6 @@ class Assembler:
       coordinates=np.copy(u.atoms.positions)
       residues=list(u.atoms.resnames)
       segids=list(u.atoms.segids)
-      #~ print u.atoms.names
-      #~ quit()
       del u
       return coordinates,residues,segids
    
@@ -227,10 +229,10 @@ class Assembler:
       u.add_TopologyAttr('names')
       
       # fill in attributes
-      u.atoms.residues.resnames=self.residues[:self.N]
-      u.atoms.segments.segids=self.segids[:self.N]
-      u.atoms.names=["CA"]*self.N
-
+      u.atoms.residues.resnames = self.residues[:self.N]
+      u.atoms.segments.segids = self.segids[:self.N]
+      u.atoms.names = ["CA"]*self.N
+      u.atoms.positions = self.global_coordinates[:self.N]
       # Write the pdb file
       u.atoms.write(pdbout)
       

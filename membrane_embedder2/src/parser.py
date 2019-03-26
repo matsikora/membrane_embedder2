@@ -31,7 +31,7 @@ class Parse:
                # Initialise an empty option dictionary with some good defaults
                if "[" in stripped_line:
                   molname=stripped_line.split()[1]
-                  self.options[molname]=self.empty_option_dict
+                  self.options[molname]=self.empty_option_dict.copy() # dict1=dict2 does not copy!
                   self.options[molname]["MolName"]=molname
                if ":" in stripped_line: 
                   # now process line by line
@@ -40,6 +40,7 @@ class Parse:
                      raise BaseException("Option \"{}\" not known, please check your input file".format(key))
                   self.options[molname][key]=value
       self._check()
+      
    def _check(self):
       """
       Check proper types of variables

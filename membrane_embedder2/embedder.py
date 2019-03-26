@@ -68,15 +68,18 @@ def assemble(ctx,input,box,pdbout,topout):
    P=PRS.Parse(input,ctx.obj['DEBUG'])
    A=ASM.Assembler(box)
    for mol in P.keys():
+      #~ print "=",P[mol]
       A.add_molecule(P[mol])
    A._writePDB(pdbout)
    A._writeTOP(topout)
    
 @cli.command()
+@click.option('--topin','topin',nargs=1, default=None, type=click.STRING, help='name of an input topology file',required=True)
 @click.pass_context
-def build_topology(ctx):
+def build_topology(ctx,topin):
    print('Debug is %s' % (ctx.obj['DEBUG'] and 'on' or 'off'))
    B=TPB.Builder()
+   B.add_topology(topin)
 
 if __name__ == '__main__':
    cli(obj={})
