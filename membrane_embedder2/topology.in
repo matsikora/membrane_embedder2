@@ -14,14 +14,18 @@ Placement: grid # grid, coordinates
 #    define spring constant
 #    define restraints - this could be connected to membrane making.
 # 2. define break points where hinge is added
-#Addon: {name: link1, attachment:position: }
+# Small additions should be possible via "addon keyword, 
+#large ones should be added via "connect_to" keyword followed by name 
+#of molecule to connect to. Then topology should be able to 
+#traverse the graph and define domains by that.
+Addon: {name: link1, attachment:1, position:1,k:100, x0:0.3, N:1 }
 
-[ Molecule_2 ]
-PDB: hetero.pdb
-Ncopies: 1
-# Cutoff for molecule placement. Set to 0 if Complexes should deal wiht it
-Cutoff: 0.1 
-Placement: random # grid, coordinates
-#Placement: coordinates # grid, coordinates
-#Placement: grid # grid, coordinates
+#[ Molecule_2 ]
+#PDB: hetero.pdb
+#Ncopies: 1
+## Cutoff for molecule placement. Set to 0 if Complexes should deal wiht it
+#Cutoff: 0.1 
+#Placement: random # grid, coordinates
+##Placement: coordinates # grid, coordinates
+##Placement: grid # grid, coordinates
 

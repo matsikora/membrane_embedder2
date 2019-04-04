@@ -14,6 +14,17 @@ class Parse:
                               "Ncopies":1,
                               "Placement":"random",
                               "Cutoff":0.2,
+                              "Translation":[5.0,5.0,5.0],
+                              "Rotation":0.5,
+                              "Addon":[]
+                              }
+      self.empty_addon_dict={
+                              "name":None,
+                              "attachment":0,
+                              "position":0,
+                              "x0":0,
+                              "k":1,
+                              "N":1,
                               }
       self.input=input
       self._parse()
@@ -35,12 +46,27 @@ class Parse:
                   self.options[molname]["MolName"]=molname
                if ":" in stripped_line: 
                   # now process line by line
-                  key,value=[i.strip() for i in stripped_line.split(":")]
-                  if key not in self.options[molname].keys():
-                     raise BaseException("Option \"{}\" not known, please check your input file".format(key))
-                  self.options[molname][key]=value
+                  if "{" not in stripped_line:
+                     key,value=[i.strip() for i in stripped_line.split(":")]
+
+                     if key not in self.options[molname].keys():
+                        raise BaseException("Option \"{}\" not known, please check your input file".format(key))
+                     self.options[molname][key]=value                     
+                  else:
+                     # This is to define special lines that are given by a dictionary
+                     key,value=stripped_line.split(":",1) # split on first occurence
+                     if key=="Addon": # additional atoms to be added per molecule
+                        addondict=self.empty_addon_dict.copy()
+                        addondict_string = value.split("}",-1)[0].split("{",1)[1]
+                        for pair in addondict_string.split(","):
+                           addonkey,addonvalue=[i.strip() for i in pair.split(":")]
+                           if addonkey not in addondict.keys():
+                              raise BaseException("Option \"{}\" in Addon section of molecule {} not known, please check your input file".format(addonkey,molname))
+                           addondict[addonkey]=addonvalue
+                        value=addondict
+                     # Since addon keyword can be used many times, this is a list
+                     self.options[molname][key].append(value)                     
       self._check()
-      
    def _check(self):
       """
       Check proper types of variables
@@ -57,8 +83,22 @@ class Parse:
                   self.options[molname][key]=float(self.options[molname][key])
                except:
                   raise BaseException("Wrong type of the variable in molecule {} section {}".format(molname,key))
-
-                  
+            if key in ["Addon"]: # test the addon part and convert variables
+               for item in self.options[molname][key]: # Iterate over all attachments
+                  if item is not None:
+                     # attachment point
+                     dtypes={"attachment":int}
+                     try:
+                        item["attachment"]=int(item["attachment"])
+                     except:
+                        raise BaseException("Wrong type of the variable in molecule {} section {}".format(molname,key))
+                     # position
+                     #~ try:
+                        #~ print self.options[molname][key]["position"]
+                        #~ self.options[molname][key]["position"]=int(self.options[molname][key]["position"])
+                     #~ except:
+                        #~ raise BaseException("Wrong type of the variable in molecule {} section {}".format(molname,key))
+                     
    def __setitem__(self, key, item):
       self.__dict__[key] = item
    

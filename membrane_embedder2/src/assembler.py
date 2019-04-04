@@ -43,6 +43,18 @@ class Assembler:
       self.segids=[] # Keep chain names
       self.residues=[] # Keep residue names
       self.topologies=[] #Keep topologies
+   
+   def _grow_addons(self,coordinates,residues,segids,addon):
+      """
+      Attach all needed addons to the protein. 
+      """
+      attach_to=addon['attachment']-1 # Residues numbered from 1 but coordinates from 0
+      position=coordinates[attach_to] # attach to this atom, so put it in the neighbourhood
+      Nbeads=addon['N']
+      # Next will be to add it at the end of coordinates, add new residue(s) at the end and give the same segid as protein.
+      # Need to figure out how to a) make sure the connectivity is passed to the topology class
+      # b) handle multiple atoms in single addon c) handle branches ? 
+      
       
       
    def add_molecule(self,options):
@@ -58,6 +70,14 @@ class Assembler:
       Cutoff=options['Cutoff']
       coordinates,residues,segids=self._loadPDB(PDB)
       
+      
+      # Grow all additional linkers and/or glycans on the protein prior to propagation
+      for addon in options['Addon']:
+         self._grow_addons(coordinates,residues,segids,addon)
+         # Cannot be done here, it can only work for stuff that is relative to the protein, like glycans. 
+         # For attachment to the absolute position we might need to do it via "molecule". 
+         # Which is OK, let's do it like that.
+      quit()
       
       # There are 3 options: random, grid, coordinates 
       if Placement == "coordinates":
